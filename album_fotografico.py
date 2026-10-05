@@ -1,22 +1,64 @@
 def carica_da_file(file_path):
     """Carica le foto dal file, creando un nuovo anno ogni volta che compare per la prima volta"""
-    # TODO
+    try:
+        album = {}
+        with open(file_path,'r', encoding='utf-8') as f:
+            f.readline()
+            for riga in f:
+                campi = riga.rstrip().split(',')
+                anno = int(campi[4])
+                codice = campi[0]
+                titolo = campi[1]
+                autore = campi[2]
+                mese = int(campi[3])
 
+                if anno not in album:
+                    album[anno] = []
+                album[anno].append((codice, titolo, autore, mese, anno))
+        return album
+
+    except FileNotFoundError:
+        print(f"Errore: il file '{file_path}' non è stato trovato.")
+        return None
 
 def aggiungi_foto(album, codice, titolo, autore, mese, anno, file_path):
     """Aggiunge una foto all'album, creando l'anno al volo se non è ancora presente"""
-    # TODO
+    if mese < 1 or mese > 12:
+        return None
+    if anno not in album:
+        album[anno] = []
+        # se cerca_foto non è none significa che ha trovato una foto con quel codice)
+    if cerca_foto(album, codice) is not None:
+        return None
 
+    foto = (codice, titolo, autore, mese, anno)
+    album[anno].append(foto)
+
+    try:
+        with open(file_path, 'a', encoding='utf-8') as f:
+            f.write(f"{codice}, {titolo}, {autore}, {mese}, {anno}\n")
+        return (codice, titolo, autore, mese, anno)
+    except FileNotFoundError:
+        return None
 
 def cerca_foto(album, codice):
     """Cerca una foto nell'album dato il codice"""
-    # TODO
+    for anno, lista_foto in album.items():
+        for foto in lista_foto:
+            if foto[0] == codice:
+                return foto
+    return None
 
 
 def elenco_foto_anno_per_titolo(album, anno):
     """Ordina i titoli delle foto di un dato anno in ordine alfabetico"""
-    # TODO
+    if anno not in album:
+        return None
 
+    lista_titoli = []
+    for foto in album[anno]:
+        lista_titoli.append(foto[1])
+    return sorted(lista_titoli)
 
 def main():
     album = []
